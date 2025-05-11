@@ -3,6 +3,8 @@ const parquet = require("parquetjs-lite");
 const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
+const { imageHash } = require("image-hash");
+var compare = require("hamming-distance");
 
 let linksCount = 0;
 
@@ -13,7 +15,7 @@ const readData = async (filePath) => {
 
   let record = null;
   while ((record = await cursor.next())) {
-    const siteLink = `https://${record.domain}`;
+    const siteLink = record.domain;
 
     if (siteLink) {
       links.push(siteLink);
@@ -25,11 +27,15 @@ const readData = async (filePath) => {
 };
 
 const downloadLogo = async (browser, links, logosDir) => {
+  console.log(`There are ${linksCount} websites.`);
   for (let i = 0; i < links.length; i++) {
     const page = await browser.newPage();
 
     try {
-      await page.goto(links[i], { timeout: 20000, waitUntil: "load" });
+      await page.goto(`https://${links[i]}`, {
+        timeout: 20000,
+        waitUntil: "load",
+      });
       await page.setViewport({ width: 1280, height: 800 });
 
       const logo = await page.$(
@@ -84,6 +90,41 @@ const normalizeLogos = async (logosDir) => {
   console.log("Normalizing done!");
 };
 
+const generateImageHashes = async (dir) => {
+  const folder = fs.readdirSync(dir);
+  const hashList = [];
+  let i = 0;
+  for (const file of folder) {
+    const img = await new Promise((resolve, reject) => {
+      imageHash(`${dir}/${file}`, 32, true, (error, data) => {
+        if (error) reject(error);
+        resolve(data);
+      });
+    });
+    hashList.push({ id: i, fileName: file, hash: img });
+    i += 1;
+  }
+  return hashList;
+};
+
+const compareImages = async (hashList) => {
+  const allImagesSimilarData = [];
+  for (let i = 0; i < hashList.length; i++) {
+    let highSimilarity = { file: hashList[i].fileName, similarTo: [] };
+    for (let j = i + 1; j < hashList.length; j++) {
+      var distance = compare(
+        Buffer.from(hashList[i].hash, "hex"),
+        Buffer.from(hashList[j].hash, "hex")
+      );
+      if (distance < 60) {
+        highSimilarity.similarTo.push(hashList[j].fileName);
+      }
+    }
+    allImagesSimilarData.push(highSimilarity);
+  }
+  return allImagesSimilarData;
+};
+
 (async () => {
   const logosDir = path.join(__dirname, "logos");
 
@@ -91,14 +132,17 @@ const normalizeLogos = async (logosDir) => {
     fs.mkdirSync(logosDir, { recursive: true });
   }
 
-  //   normalizeLogos(logosDir);
+  const browser = await puppeteer.launch();
 
-  //   const browser = await puppeteer.launch();
+  const data = await generateImageHashes(logosDir);
 
   //   const websites = await readData("./logos.snappy.parquet");
-  //   console.log(`There are ${linksCount} websites.`);
 
   //   await downloadLogo(browser, websites, logosDir);
 
-  //   await browser.close();
+  //   normalizeLogos(logosDir);
+  const imgData = await compareImages(data);
+  console.log(imgData);
+
+  await browser.close();
 })();

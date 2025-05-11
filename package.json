@@ -1,8 +1,12 @@
 {
   "dependencies": {
+    "canvas": "^3.1.0",
+    "hamming-distance": "^1.0.0",
+    "image-hash": "^5.3.2",
     "parquetjs-lite": "^0.8.7",
     "puppeteer": "^24.8.2",
     "puppeteer-core": "^24.8.2",
+    "resemblejs": "^5.0.0",
     "sharp": "^0.34.1"
   }
 }
