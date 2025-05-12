@@ -1,0 +1,24 @@
+ul {
+  list-style: none;
+}
+
+.container {
+  border-bottom: 1px solid black;
+}
+
+.logosContainer {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  padding: 10px;
+}
+
+.similarsContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 25px;
+}
+
+a {
+  width: fit-content;
+}
