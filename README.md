@@ -11,6 +11,8 @@ As for the image comparison, this was a little tricky. I first found about resem
 
 As for the websites, i managed to get about 2000 logos from the websites, some of them didn't work.
 
+I've also added an html file to visualize the grouped logos from the comparison. Just press the button after you've generated the json file and it will map the list.
+
 With this application you can compare images/logos and group them by how similar they are with each other.
 
 It generates the perceptual hash of each image and then compares the hamming distance to decide wheter or not two images are similar.
