@@ -26,6 +26,8 @@ const generate = async () => {
   normalizeLogos(logosDir, normalizedDir);
   // 4. Generate phash for each logo
   const hashList = await generateImageHashes(normalizedDir);
-  // 5. Compares the phash of each logo with all the logos and generates a json file with the results.
+  // // 5. Compares the phash of each logo with all the logos and generates a json file with the results.
   await compareImages(hashList);
 };
+
+generate();

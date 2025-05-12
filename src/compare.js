@@ -3,7 +3,10 @@ const fs = require("fs");
 
 const compareImages = async (hashList) => {
   const allImagesSimilarData = [];
+  console.log("Generating groups of similarity...");
+
   for (let i = 0; i < hashList.length; i++) {
+    console.log(`Progress: ${i + 1}/${hashList.length}`);
     let highSimilarity = { file: hashList[i].fileName, similarTo: [] };
     for (let j = i + 1; j < hashList.length; j++) {
       var distance = compare(

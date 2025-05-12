@@ -12,7 +12,7 @@ generate.addEventListener("click", () => {
         li.innerHTML = `<div class="logosContainer">
       
       <a href="https://${name}" target=_blank>
-        <img src="/logos_normalized/${element.file}" alt="${
+        <img src="./logos_normalized/${element.file}" alt="${
           element.file
         }" width="128" />
       </a>
@@ -23,7 +23,7 @@ generate.addEventListener("click", () => {
              <a href="https://${img
                .replace("logo_", "")
                .replace(".png", "")}" target=_blank>
-              <img src="/logos_normalized/${img}" width="64"></img>
+              <img src="./logos_normalized/${img}" width="64"></img>
             </a>
             </li>`;
             })
