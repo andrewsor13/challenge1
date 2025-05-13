@@ -31,10 +31,11 @@ For reading the file with the links:
 To download the logos:
 
 ```
-  await downloadLogo(websites, logosDir,nr);
+  await downloadLogo(websites, logosDir, nr);
 ```
 
 nr - the number of instances to be run at the same time. Depending on the system we can choose to run more
+// the default is 3
 
 To normalize all the logos:
 

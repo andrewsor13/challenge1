@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const cliProgress = require("cli-progress");
 
-const downloadLogo = async (links, logosDir, nr = 5) => {
+const downloadLogo = async (links, logosDir, nr = 3) => {
   if (!fs.existsSync(logosDir)) {
     fs.mkdirSync(logosDir, { recursive: true });
   }
@@ -16,9 +16,6 @@ const downloadLogo = async (links, logosDir, nr = 5) => {
   const cluster = await Cluster.launch({
     concurrency: Cluster.CONCURRENCY_CONTEXT,
     maxConcurrency: nr,
-    puppeteerOptions: {
-      headless: true,
-    },
   });
 
   await cluster.task(async ({ page, data: link }) => {
@@ -30,7 +27,7 @@ const downloadLogo = async (links, logosDir, nr = 5) => {
       await page.setViewport({ width: 1280, height: 800 });
 
       const logo = await page.$(
-        'img[alt*="logo" i], img[src*="logo" i], svg[class*="logo" i], [class*="logo" i] svg'
+        'img[alt*="logo" i], img[src*="logo" i], svg[class*="logo" i], [class*="logo" i] svg, [class*="logo" i] img'
       );
 
       if (logo) {
