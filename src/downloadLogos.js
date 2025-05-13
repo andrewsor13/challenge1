@@ -55,13 +55,15 @@ const downloadLogo = async (links, logosDir, nr = 5) => {
   await cluster.idle();
   await cluster.close();
   bar1.stop();
-  fs.writeFile("errors.log", errorsList.join("\n"), "utf8", (err) => {
-    if (err) {
-      console.error("Error writing to file", err);
-    } else {
-      console.log("Error logs saved in errors.log");
-    }
-  });
+  if (errorsList.length > 0) {
+    fs.writeFile("errors.log", errorsList.join("\n"), "utf8", (err) => {
+      if (err) {
+        console.error("Error writing to file", err);
+      } else {
+        console.log("Error logs saved in errors.log");
+      }
+    });
+  }
 };
 
 module.exports = downloadLogo;
