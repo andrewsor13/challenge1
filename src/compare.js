@@ -1,12 +1,20 @@
 var compare = require("hamming-distance");
 const fs = require("fs");
+const cliProgress = require("cli-progress");
 
 const compareImages = async (hashList) => {
   const allImagesSimilarData = [];
+
   console.log("Generating groups of similarity...");
 
+  const bar1 = new cliProgress.SingleBar(
+    {},
+    cliProgress.Presets.shades_classic
+  );
+  bar1.start(hashList.length, 0);
+
   for (let i = 0; i < hashList.length; i++) {
-    console.log(`Progress: ${i + 1}/${hashList.length}`);
+    bar1.increment();
     let highSimilarity = { file: hashList[i].fileName, similarTo: [] };
     for (let j = i + 1; j < hashList.length; j++) {
       var distance = compare(
@@ -33,6 +41,7 @@ const compareImages = async (hashList) => {
       }
     }
   );
+  bar1.stop();
 };
 
 module.exports = compareImages;

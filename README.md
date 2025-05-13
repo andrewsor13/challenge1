@@ -11,6 +11,8 @@ I had to consider wheter i should compare the logos online or to download them a
 
 To get the logos i first found the library cheerio, but then decided to use puppeteer, as i found it to be much easier to understand and work with.
 
+As i was testing i realized that the total download time was between 4 and 6 hours. So i decided on improving that. Initially i used puppeteer with a for loop. In the end i swtiched to using puppeteer-cluster which allowed me to run multiple instances at the same time i also tried Promise.all() but found puppeteer-cluster to be more efficient.
+
 As for the image comparison, this was a little tricky. I first found about resembleJs as a tool, but i later understood that it compares images pixel by pixel and for my task, needing to compare it from a human perspective or at least close to one, i didn't tought it will be a good choice. So after a little more research i found about perceptual hash, and that this might be a better choice, due to it's ability to "get the general ideea of the image" (not the best way to explain it) or the image fingerprint.
 
 As for the websites, i managed to get about 2200 logos from the websites, some of them didn't work or my algorithm was unable to retrive a logo.
@@ -27,8 +29,10 @@ For reading the file with the links:
 To download the logos:
 
 ```
-  await downloadLogo(websites, logosDir);
+  await downloadLogo(websites, logosDir,nr);
 ```
+
+nr - the number of instances to be run at the same time. Depending on the system we can choose to run more
 
 To normalize all the logos:
 

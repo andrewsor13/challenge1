@@ -10,8 +10,8 @@ const downloadLogo = async (links, logosDir, nr = 5) => {
 
   let errorsList = [];
 
-  const b1 = new cliProgress.SingleBar(cliProgress.Presets.shades_classic);
-  b1.start(links.length, 0);
+  const bar1 = new cliProgress.SingleBar(cliProgress.Presets.shades_classic);
+  bar1.start(links.length, 0);
 
   const cluster = await Cluster.launch({
     concurrency: Cluster.CONCURRENCY_CONTEXT,
@@ -44,7 +44,7 @@ const downloadLogo = async (links, logosDir, nr = 5) => {
     } catch (error) {
       errorsList.push(`${link}:  ${error}`);
     } finally {
-      b1.increment();
+      bar1.increment();
     }
   });
 
@@ -54,7 +54,7 @@ const downloadLogo = async (links, logosDir, nr = 5) => {
 
   await cluster.idle();
   await cluster.close();
-  b1.stop();
+  bar1.stop();
   fs.writeFile("errors.log", errorsList.join("\n"), "utf8", (err) => {
     if (err) {
       console.error("Error writing to file", err);
