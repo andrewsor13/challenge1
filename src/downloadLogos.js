@@ -1,17 +1,31 @@
-const puppeteer = require("puppeteer");
+const { Cluster } = require("puppeteer-cluster");
 const path = require("path");
+const fs = require("fs");
+const cliProgress = require("cli-progress");
 
-const downloadLogo = async (links, logosDir) => {
-  const browser = await puppeteer.launch();
-  console.log(`There are ${links.length} websites.`);
-  for (let i = 0; i < links.length; i++) {
-    const page = await browser.newPage();
-    console.log(`Progress: ${i + 1}/${links.length}`);
+const downloadLogo = async (links, logosDir, nr = 5) => {
+  if (!fs.existsSync(logosDir)) {
+    fs.mkdirSync(logosDir, { recursive: true });
+  }
 
+  let errorsList = [];
+
+  const b1 = new cliProgress.SingleBar(cliProgress.Presets.shades_classic);
+  b1.start(links.length, 0);
+
+  const cluster = await Cluster.launch({
+    concurrency: Cluster.CONCURRENCY_CONTEXT,
+    maxConcurrency: nr,
+    puppeteerOptions: {
+      headless: true,
+    },
+  });
+
+  await cluster.task(async ({ page, data: link }) => {
     try {
-      await page.goto(`https://${links[i]}`, {
+      await page.goto(`https://${link}`, {
         timeout: 20000,
-        waitUntil: "load",
+        waitUntil: "domcontentloaded",
       });
       await page.setViewport({ width: 1280, height: 800 });
 
@@ -22,23 +36,32 @@ const downloadLogo = async (links, logosDir) => {
       if (logo) {
         const box = await logo.boundingBox();
         if (box && box.width > 0 && box.height > 0) {
-          const fileName = `logo_${encodeURIComponent(links[i])}.png`;
+          const fileName = `logo_${encodeURIComponent(link)}.png`;
           const filePath = path.join(logosDir, fileName);
           await logo.screenshot({ path: filePath });
-          console.log(`Logo saved!`);
-        } else {
-          console.log(`Logo found, but it's invisible or has no size.`);
         }
-      } else {
-        console.log(`Logo not found.`);
       }
     } catch (error) {
-      console.log(`${error}`);
+      errorsList.push(`${link}:  ${error}`);
+    } finally {
+      b1.increment();
     }
+  });
 
-    await page.close();
+  for (const link of links) {
+    await cluster.queue(link);
   }
-  await browser.close();
+
+  await cluster.idle();
+  await cluster.close();
+  b1.stop();
+  fs.writeFile("errors.log", errorsList.join("\n"), "utf8", (err) => {
+    if (err) {
+      console.error("Error writing to file", err);
+    } else {
+      console.log("Error logs saved in errors.log");
+    }
+  });
 };
 
 module.exports = downloadLogo;

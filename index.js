@@ -20,14 +20,15 @@ if (!fs.existsSync(normalizedDir)) fs.mkdirSync(normalizedDir);
 const generate = async () => {
   // 1. Reads the links from the logos file and stores them in websites.
   const websites = await readData("./logos.snappy.parquet");
+
   // 2. Starts the download process of all the logos.
-  await downloadLogo(websites, logosDir);
+  await downloadLogo(websites, logosDir, 5);
   // 3. Normalizes all the logos to the same size
-  normalizeLogos(logosDir, normalizedDir);
-  // 4. Generate phash for each logo
-  const hashList = await generateImageHashes(normalizedDir);
-  // // 5. Compares the phash of each logo with all the logos and generates a json file with the results.
-  await compareImages(hashList);
+  // normalizeLogos(logosDir, normalizedDir);
+  // // 4. Generate phash for each logo
+  // const hashList = await generateImageHashes(normalizedDir);
+  // // // 5. Compares the phash of each logo with all the logos and generates a json file with the results.
+  // await compareImages(hashList);
 };
 
 generate();
