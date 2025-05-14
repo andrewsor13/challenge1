@@ -5,7 +5,7 @@ With this application you can compare images/logos and group them by how similar
 
 It generates the perceptual hash of each image and then compares the hamming distance to decide wheter or not two images are similar.
 
-In my aproach i started by doing some research on the subject.I had never done such a task before, so it was a bit of a challenge.
+In my aproach i started by doing some research on the subject. I had never done such a task before, so it was a bit of a challenge.
 
 I had to consider wheter i should compare the logos online or to download them and then do it. I decided that it was best to first download them because if i want to do multiple comparisons it would take a lot of time to do it over and over again, and also if we introduce a separate logo that we want to compare, we would be forced to repeat the long process of accesing every website.
 
