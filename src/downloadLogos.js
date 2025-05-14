@@ -16,6 +16,9 @@ const downloadLogo = async (links, logosDir, nr = 3) => {
   const cluster = await Cluster.launch({
     concurrency: Cluster.CONCURRENCY_CONTEXT,
     maxConcurrency: nr,
+    puppeteerOptions: {
+      protocolTimeout: 60000,
+    },
   });
 
   await cluster.task(async ({ page, data: link }) => {
@@ -53,13 +56,16 @@ const downloadLogo = async (links, logosDir, nr = 3) => {
             const fileName = `logo_${encodeURIComponent(link)}.svg`;
             const filePath = path.join(logosDir, fileName);
             fs.writeFileSync(filePath, buffer);
-          } else {
-            const box = await logo.boundingBox();
-            if (box && box.width > 0 && box.height > 0) {
-              const fileName = `logo_${encodeURIComponent(link)}.png`;
-              const filePath = path.join(logosDir, fileName);
-              await logo.screenshot({ path: filePath });
-            }
+          } else if (src) {
+            const imageUrl = new URL(
+              src,
+              link.href.includes("https://") ? `${link}` : `https://${link}`
+            ).href;
+            const viewSource = await page.goto(imageUrl);
+            const buffer = await viewSource.buffer();
+            const fileName = `logo_${encodeURIComponent(link)}.png`;
+            const filePath = path.join(logosDir, fileName);
+            fs.writeFileSync(filePath, buffer);
           }
         }
       }
