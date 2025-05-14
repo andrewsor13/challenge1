@@ -4,9 +4,13 @@ const sharp = require("sharp");
 
 const normalizeLogos = async (logosDir, normDir) => {
   console.log("Normalizing logos...");
-  fs.readdirSync(logosDir).forEach(async (file) => {
+
+  const files = fs.readdirSync(logosDir);
+
+  for (const file of files) {
     const filePath = path.join(logosDir, file);
-    const normalizedPath = path.join(normDir, file);
+    const newFileName = path.parse(file).name + ".png";
+    const normalizedPath = path.join(normDir, newFileName);
 
     try {
       await sharp(filePath)
@@ -18,9 +22,10 @@ const normalizeLogos = async (logosDir, normDir) => {
         .toFormat("png")
         .toFile(normalizedPath);
     } catch (error) {
-      console.log(error);
+      console.error(`Error for ${file}:`, error.message);
     }
-  });
+  }
+
   console.log("Normalizing done!");
 };
 

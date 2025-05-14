@@ -25,17 +25,42 @@ const downloadLogo = async (links, logosDir, nr = 3) => {
         waitUntil: "domcontentloaded",
       });
       await page.setViewport({ width: 1280, height: 800 });
-
+      await page.waitForSelector(
+        'img[alt*="logo" i], img[src*="logo" i], svg[class*="logo" i], [class*="logo" i] svg, [class*="logo" i] img',
+        { timeout: 5000 }
+      );
       const logo = await page.$(
         'img[alt*="logo" i], img[src*="logo" i], svg[class*="logo" i], [class*="logo" i] svg, [class*="logo" i] img'
       );
 
       if (logo) {
-        const box = await logo.boundingBox();
-        if (box && box.width > 0 && box.height > 0) {
-          const fileName = `logo_${encodeURIComponent(link)}.png`;
+        const tagName = await page.evaluate(
+          (el) => el.tagName.toLowerCase(),
+          logo
+        );
+
+        if (tagName === "svg") {
+          const svg = await page.evaluate((el) => el.outerHTML, logo);
+          const fileName = `logo_${encodeURIComponent(link)}.svg`;
           const filePath = path.join(logosDir, fileName);
-          await logo.screenshot({ path: filePath });
+          fs.writeFileSync(filePath, svg, "utf8");
+        } else {
+          const src = await page.evaluate((el) => el.getAttribute("src"), logo);
+          if (src && src.endsWith("svg")) {
+            const svgUrl = new URL(src, `https://${link}`).href;
+            const pageSource = await page.goto(svgUrl);
+            const buffer = await pageSource.buffer();
+            const fileName = `logo_${encodeURIComponent(link)}.svg`;
+            const filePath = path.join(logosDir, fileName);
+            fs.writeFileSync(filePath, buffer);
+          } else {
+            const box = await logo.boundingBox();
+            if (box && box.width > 0 && box.height > 0) {
+              const fileName = `logo_${encodeURIComponent(link)}.png`;
+              const filePath = path.join(logosDir, fileName);
+              await logo.screenshot({ path: filePath });
+            }
+          }
         }
       }
     } catch (error) {

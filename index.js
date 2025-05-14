@@ -23,11 +23,11 @@ const generate = async () => {
   // 2. Starts the download process of all the logos.
   // await downloadLogo(websites, logosDir, 5);
   // 3. Normalizes all the logos to the same size
-  await normalizeLogos(logosDir, normalizedDir);
+  // await normalizeLogos(logosDir, normalizedDir);
   // 4. Generate phash for each logo
-  // const hashList = await generateImageHashes(normalizedDir);
+  const hashList = await generateImageHashes(normalizedDir);
   // 5. Compares the phash of each logo with all the logos and generates a json file with the results.
-  // await compareImages(hashList);
+  await compareImages(hashList);
 };
 
 generate();
