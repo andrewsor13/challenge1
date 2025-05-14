@@ -17,10 +17,10 @@ After downloading the logos, the script will generate a file "error.log" in whic
 
 As for the image comparison, this was a little tricky. I first found about resembleJs as a tool, but i later understood that it compares images pixel by pixel and for my task, needing to compare it from a human perspective or at least close to one, i didn't tought it will be a good choice. So after a little more research i found about perceptual hash, and that this might be a better choice, due to it's ability to "get the general ideea of the image" (not the best way to explain it) or the image fingerprint.
 
-As for the websites, i managed to get about 2200 logos from the websites, some of them didn't work or my algorithm was unable to retrive a logo.
+While testing i ran into issues with some of the logos. On the websites that have svg's as the logo my alghorithm would take a screenshot of the background(in most cases white). This forced me to add a check of wheter the logo element is svg or something else. This increased the number of succesfully downloaded logos.
 
 I've also added an html file to visualize the grouped logos from the comparison. Just press the button after you've generated the json file and it will map the list.
-Each logo is clickable and it reaches to the website it was taken from.
+Each logo is clickable and it's linked to the website it was taken from.
 
 For reading the file with the links:
 
